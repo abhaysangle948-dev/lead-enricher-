@@ -6,5 +6,6 @@
   "input_name": null,
   "input_company": null,
   "input_linkedin": null,
-  "enrichment_status": "pending"
+  "enrichment_status": "complete",
+  "company_name": "Example Corp"
 }
