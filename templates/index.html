@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lead Enricher</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header>
+  <h1>Lead Enricher</h1>
+  <nav><a href="/">Enrich</a><a href="/history">History</a></nav>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="field-row">
+      <div>
+        <label>Email</label>
+        <input type="email" id="f-email" placeholder="jane@acme.com">
+      </div>
+      <div>
+        <label>Domain</label>
+        <input type="text" id="f-domain" placeholder="acme.com">
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>Name</label>
+        <input type="text" id="f-name" placeholder="Jane Doe">
+      </div>
+      <div>
+        <label>Company</label>
+        <input type="text" id="f-company" placeholder="Acme Inc">
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>LinkedIn URL</label>
+        <input type="text" id="f-linkedin" placeholder="https://linkedin.com/company/acme">
+      </div>
+    </div>
+    <button id="enrich-btn">Enrich</button>
+    <span class="muted" id="form-msg" style="margin-left: 0.75rem;"></span>
+  </div>
+
+  <div class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0;">Results</h3>
+      <button class="secondary" onclick="window.location='/api/export'">Export CSV</button>
+    </div>
+    <table id="results-table">
+      <thead>
+        <tr><th>Company</th><th>Contact</th><th>Domain</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody id="results-body"></tbody>
+    </table>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lead #{{ lead.id }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header>
+  <h1>Lead Enricher</h1>
+  <nav><a href="/">Enrich</a><a href="/history">History</a></nav>
+</header>
+
+<main>
+  <div class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h2 style="margin:0 0 0.25rem;">{{ lead.company_name or lead.input_domain or 'Unnamed lead' }}</h2>
+        <span class="status {{ lead.enrichment_status }}">{{ lead.enrichment_status }}</span>
+      </div>
+      <div>
+        <button class="secondary" onclick="window.location='/api/export/{{ lead.id }}'">Export CSV</button>
+        <button class="secondary" onclick="deleteLead({{ lead.id }})">Delete</button>
+      </div>
+    </div>
+
+    {% if lead.error_message %}
+      <p class="muted" style="margin-top:1rem;">{{ lead.error_message }}</p>
+    {% endif %}
+
+    <div class="detail-grid" style="margin-top:1.5rem;">
+      <div class="detail-section">
+        <h3>Company</h3>
+        <p>{{ lead.company_description or '—' }}</p>
+        <p class="muted">Location: {{ lead.company_location or '—' }}</p>
+        <p class="muted">Founded: {{ lead.company_founded_year or '—' }}</p>
+        <p class="muted">Domain: {{ lead.company_domain or lead.input_domain or '—' }}</p>
+      </div>
+      <div class="detail-section">
+        <h3>Contact</h3>
+        <p>{{ lead.contact_name or '—' }}</p>
+        <p class="muted">{{ lead.contact_title or '' }}</p>
+        <p class="muted">{{ lead.contact_email or '—' }}</p>
+        <p class="muted">{{ lead.contact_phone or '—' }}</p>
+      </div>
+      <div class="detail-section">
+        <h3>Social</h3>
+        {% for field, label in [('linkedin_url','LinkedIn'), ('twitter_url','Twitter/X'), ('facebook_url','Facebook'), ('github_url','GitHub')] %}
+          {% if lead[field] %}<p><a href="{{ lead[field] }}" target="_blank" style="color:var(--accent);">{{ label }}</a></p>{% endif %}
+        {% endfor %}
+      </div>
+      <div class="detail-section">
+        <h3>Tech Stack</h3>
+        {% if lead.tech_stack %}
+          {% for t in lead.tech_stack %}<span class="tag">{{ t }}</span>{% endfor %}
+        {% else %}<p class="muted">None detected</p>{% endif %}
+      </div>
+    </div>
+
+    {% if lead.data_sources %}
+    <div class="detail-section" style="margin-top:1.5rem;">
+      <h3>Data Sources</h3>
+      <div class="source-badges">
+        {% for src, status in lead.data_sources.items() %}
+          <span class="tag">{{ src }}: {{ status }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+<script>
+async function deleteLead(id) {
+  if (!confirm('Delete this lead?')) return;
+  await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+  window.location = '/history';
+}
+</script>
+</body>
+</html>

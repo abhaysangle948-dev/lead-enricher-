@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lead History</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header>
+  <h1>Lead Enricher</h1>
+  <nav><a href="/">Enrich</a><a href="/history">History</a></nav>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="field-row">
+      <div>
+        <label>Search</label>
+        <input type="text" id="search-box" placeholder="Filter by company, contact, industry, domain...">
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Company</th><th>Contact</th><th>Domain</th><th>Status</th><th></th></tr></thead>
+      <tbody id="history-body"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+async function loadHistory(q) {
+  const url = q ? `/api/leads?q=${encodeURIComponent(q)}` : '/api/leads';
+  const leads = await (await fetch(url)).json();
+  const body = document.getElementById('history-body');
+  body.innerHTML = leads.map(l => `
+    <tr>
+      <td><a class="row-link" href="/lead/${l.id}">${l.company_name || l.input_domain || '—'}</a></td>
+      <td>${l.contact_name || '—'}</td>
+      <td>${l.company_domain || l.input_domain || '—'}</td>
+      <td><span class="status ${l.enrichment_status}">${l.enrichment_status}</span></td>
+      <td><a class="row-link" href="/api/export/${l.id}">CSV</a></td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" class="muted">No leads yet</td></tr>';
+}
+
+document.getElementById('search-box').addEventListener('input', (e) => loadHistory(e.target.value));
+loadHistory();
+</script>
+</body>
+</html>
